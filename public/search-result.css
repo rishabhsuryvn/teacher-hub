@@ -1,0 +1,62 @@
+#pic{
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    grid-area: pic;
+    margin-right: 1rem;
+}
+#teacher-details{
+    padding: 1rem;
+    height: 10rem;
+    grid-area: teacher-details;
+    border-radius: 10px;
+}
+.details-table td{
+    padding: 0rem .6rem;
+}
+table .text-light {
+    font-weight: 300;
+}
+#routine{
+    /* min-width: 60rem; */
+    max-width: 100rem;
+    margin-top: 1rem;
+    height: 30rem;
+    grid-area: routine;
+    border-radius: 10px;
+}
+#pic img{
+    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+}
+#routine img{
+    border-radius: 10px;
+    max-width: 100%;
+    max-height: 100%;
+    display: block; 
+}
+.ghost{
+    background-color: hsl(200, 20%, 80%);
+}
+#header{
+    display: grid; 
+    grid-template-columns: 1fr 3fr 0fr; 
+    grid-template-rows: 1fr; 
+    grid-template-areas: 
+        "pic teacher-details ."; 
+    grid-area: header; 
+}
+box{
+    max-height: auto !important;
+    background-color: black;
+    display: grid; 
+    grid-template-columns: 4fr 0fr 0fr; 
+    grid-template-rows: 1fr 3fr 0fr 0fr; 
+    gap: 1rem 0em; 
+    grid-template-areas: 
+        "header . ."
+        "routine . ."
+        ". . ."
+        ". . ."; 
+}

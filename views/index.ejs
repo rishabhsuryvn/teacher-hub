@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/global.css">
+    <link rel="stylesheet" href="/home.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Teacher-Hub</title>
+</head>
+
+<body>
+    <div class="box nav">
+        <h1>Teacher-Hub</h1>
+    </div>
+    <div class="container">
+        <div class="box">
+            <div id="search-box" style="padding: 1.5rem">
+                <form action="/result" method="POST">
+                    <input type="text" name="query" id="" placeholder="xyz or E10345">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div>
+                <p style="text-align: center">
+                    OR
+                    <br>
+                    (For Facultiies Only)
+                </p>
+            </div>
+            <div id="input-box" style="padding: 1.5rem">
+                <form id="teacher-data" onsubmit="return postData()" enctype="multipart/form-data">
+                    <input type="text" name="full_name" id="" placeholder="Full name e.g. xyz">
+                    <input type="text" name="eid" id="" placeholder="Employee ID e.g. E10345">
+                    <input type="text" name="department" id="" placeholder="Department Name">
+                    <input type="email" name="email" id="email" placeholder="Enter Cumail">
+
+                    <div id="file-upload-box">
+                        <span>Upload:</span>
+                        <label for="dp-btn">Photo</label>
+                        <input type="file" id="dp-btn" name="photo" style="position: absolute; top: -9999px;" />
+                        <label for="rp-btn">Routine</label>
+                        <input type="file" id="rp-btn" name="routine" style="position: absolute; top: -9999px;" />
+                    </div>
+                    <div id="alert-box"></div>
+                    <div id="otp-box">
+                        <button type="button" onclick="sendOTP()" id="send-resend">Send OTP</button>
+                        <input type="" name="" id="otp" placeholder="Enter OTP" required>
+                    </div>
+                    <button id="add-me" type="submit">Add Me</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    function sendOTP() {
+        const email = document.getElementById('email').value;
+        const alert = document.getElementById('alert-box');
+        alert.textContent = "";
+
+        if (email === "") {
+            alert.classList.add('warning');
+            return alert.textContent = "Email is required";
+        }
+
+        // regex to check email is authorized or not
+        const cuchd = email.match(/^[a-zA-Z0-9+_.-]+@cuchd.in$/);
+        const cumail = email.match(/^[a-zA-Z0-9+_.-]+@cumail.in$/);
+        const gmail = email.match(/^[a-zA-Z0-9+_.-]+@gmail.com$/);
+        const outlook = email.match(/^[a-zA-Z0-9+_.-]+@outlook.com$/);
+        const yahoo = email.match(/^[a-zA-Z0-9+_.-]+@yahoo.com$/);
+
+        if (!email.match(cuchd)) {
+            alert.classList.add('warning');
+            return alert.textContent = "Invalid Email";
+        }
+
+        document.getElementById('add-me').style.visibility = "visible";
+        document.getElementById('send-resend').innerText = "Resend OTP";
+        fetch('/sendOTP', {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        alert.textContent = "OTP Sent";
+    }
+
+
+    function handleFileUpload() {
+        var fileInput = document.getElementById('rp-btn');
+        var file = fileInput.files[0]; // Get the selected file
+
+        if (file) {
+            // Perform further processing or validation
+            console.log("File selected:", file.name);
+        } else {
+            // No file selected, display an error message
+            alert("Routine is required");
+        }
+    }
+
+    async function postData() {
+        event.preventDefault();
+        try {
+            const otp = document.getElementById('otp').value;
+            console.log(otp);
+
+            const response = await fetch('/validateOTP', {
+                method: 'POST',
+                body: JSON.stringify({ otp }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log(response);
+            const data = await response.json();
+            console.log(data);
+
+            if (response.status === 200) {
+                const alert = document.getElementById('alert-box');
+                alert.classList.add('success');
+                alert.textContent = "Your Data Is Uploaded Successfully";
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: new FormData(document.getElementById('teacher-data')),
+                });
+                document.getElementById('teacher-data').submit();
+                window.location.reload();
+            } else {
+                const alert = document.getElementById('alert-box');
+                alert.classList.add('error');
+                alert.textContent = "Wrong OTP!";
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+
+
+    // This is for file upload button to show filename after selecting file
+
+    const finputs = Array.from(
+        document.querySelectorAll('.file-upload [type="file"]')
+    );
+
+    finputs.forEach((input) => {
+        input.addEventListener("change", (e) => {
+            const path = e.target.value;
+            const filenameField = e.target.parentElement.querySelector("span");
+            const filename = path.split(/\/|\\/).pop();
+            if (filename) filenameField.innerText = filename;
+            else filenameField.innerText = "Filename";
+        });
+    });
+
+
+</script>
+
+</html>
