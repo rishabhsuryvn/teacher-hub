@@ -43,7 +43,6 @@ async function createTeacher(req, res) {
 }
 
 async function searchTeacher(req, res) {
-  // console.log(req.params.query)
   const teacher = await Teacher.find({
     $or: [{ full_name: req.params.query }, { eid: req.params.query }],
   }).catch((err) => {
@@ -51,7 +50,7 @@ async function searchTeacher(req, res) {
       status: err.message,
     });
   });
-  // console.log(teacher)
+
   return res.render("search-result", { data: teacher });
 }
 
