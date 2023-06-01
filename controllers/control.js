@@ -16,14 +16,12 @@ async function send404(req, res) {
 }
 
 async function createTeacher(req, res) {
-  // console.log("Create Teacher");
   const body = req.body;
   const files = req.files;
-  // console.log(body);
-  // console.log(req.files);
+
   const dp = files["photo"][0].path.replace("public", "");
   const rp = files["routine"][0].path.replace("public", "");
-  // console.log(dp, rp);
+
   try {
     const result = await Teacher.create({
       full_name: body.full_name,
